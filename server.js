@@ -18,5 +18,5 @@ app.use("/api/v1/users", users);
 app.use("/api/v1/posts", posts);
 app.use("/api/v1/follows", follows);
 
-const PORT = process.env.PORT || 5777;
+const PORT = process.env.PORT || 5700;
 app.listen(PORT, console.log("서버 가동"));
