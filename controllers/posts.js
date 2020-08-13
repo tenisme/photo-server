@@ -12,12 +12,12 @@ exports.uploadPhoto = async (req, res, next) => {
   let content = req.body.content;
 
   if (photo.mimetype.startsWith("image") == false) {
-    res.stats(400).json({ message: "사진 파일 아닙니다." });
+    res.status(400).json({ message: "사진 파일 아닙니다." });
     return;
   }
 
   if (photo.size > process.env.MAX_FILE_SIZE) {
-    res.stats(400).json({ message: "파일 크기가 너무 큽니다." });
+    res.status(400).json({ message: "파일 크기가 너무 큽니다." });
     return;
   }
 
