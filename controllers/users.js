@@ -22,7 +22,8 @@ exports.createUser = async (req, res, next) => {
     [result] = await connection.query(query, data);
     user_id = result.insertId;
   } catch (e) {
-    res.status(500).json();
+    console.log(e);
+    res.status(500).json({ errno: 1, error: e });
     return;
   }
 
@@ -34,7 +35,8 @@ exports.createUser = async (req, res, next) => {
   try {
     [result] = await connection.query(query, data);
   } catch (e) {
-    res.status(500).json();
+    console.log(e);
+    res.status(500).json({ errno: 2, error: e });
     return;
   }
 
@@ -68,7 +70,7 @@ exports.login = async (req, res, next) => {
       return;
     }
   } catch (e) {
-    console.log("error : " + e);
+    console.log(e);
     res.status(500).json({ errno: 1, error: e });
     return;
   }

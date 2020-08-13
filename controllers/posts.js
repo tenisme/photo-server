@@ -2,7 +2,6 @@ const path = require("path");
 const connection = require("../db/mysql_connection");
 const fs = require("fs");
 
-// ㅁ사진 저장
 // @desc        사진1장과 내용을 업로드 하는 API
 // @route       POST /api/v1/posts
 // @request     photo, content, user_id(auth)
