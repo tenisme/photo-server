@@ -44,7 +44,7 @@ exports.createUser = async (req, res, next) => {
 // @desc    로그인
 // @route   POST /api/v1/users/login
 // @request email, passwd
-// @response  success
+// @response  success, token
 exports.login = async (req, res, next) => {
   let email = req.body.email;
   let passwd = req.body.passwd;
@@ -68,7 +68,7 @@ exports.login = async (req, res, next) => {
       return;
     }
   } catch (e) {
-    res.status(500).json();
+    res.status(500).json({ errno: 1, error: e });
     return;
   }
 
@@ -81,7 +81,7 @@ exports.login = async (req, res, next) => {
     res.status(200).json({ success: true, token: token });
     return;
   } catch (e) {
-    res.status(500).json();
+    res.status(500).json({ errno: 2, error: e });
     return;
   }
 };

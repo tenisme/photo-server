@@ -19,5 +19,5 @@ app.use("/api/v1/posts", posts);
 app.use("/api/v1/follows", follows);
 
 const PORT = process.env.PORT || 5700;
-app.listen(PORT, console.log("서버 가동"));
+app.listen(PORT, console.log("Running Server"));
 //
