@@ -68,6 +68,7 @@ exports.login = async (req, res, next) => {
       return;
     }
   } catch (e) {
+    console.log("error : " + e);
     res.status(500).json({ errno: 1, error: e });
     return;
   }
