@@ -55,8 +55,8 @@ exports.uploadPhoto = async (req, res, next) => {
   };
 
   // S3에 파일을 업로드 하고, 성공하면 디비에 파일명 저장한다.
-  s3.upload(params, async function (err, data) {
-    console.log(err, data);
+  s3.upload(params, async function (err, s3Data) {
+    console.log(err, s3Data);
     // err이 null이면 업로드에 성공한 것
 
     let query =
