@@ -1,6 +1,7 @@
 const path = require("path");
 const connection = require("../db/mysql_connection");
 const fs = require("fs");
+var AWS = require("aws-sdk");
 
 // @desc        사진1장과 내용을 업로드 하는 API
 // @route       POST /api/v1/posts
@@ -23,28 +24,57 @@ exports.uploadPhoto = async (req, res, next) => {
 
   photo.name = `photo_${user_id}_${Date.now()}${path.parse(photo.name).ext}`;
 
-  let fileUploadPath = `${process.env.FILE_UPLOAD_PATH}/${photo.name}`;
+  // S3에 올릴 때는 필요없어지는 부분
+  // let fileUploadPath = `${process.env.FILE_UPLOAD_PATH}/${photo.name}`;
 
-  photo.mv(fileUploadPath, async (err) => {
-    if (err) {
-      console.log(err);
+  // photo.mv(fileUploadPath, async (err) => {
+  //   if (err) {
+  //     console.log(err);
+  //     return;
+  //   }
+  // });
+
+  // S3에 올릴 때 필요한 부분
+  // 1. S3 의 버킷 이름과 aws 의 credential.csv 파일의 정보를 셋팅한다.
+  let file = photo.data;
+
+  AWS.config.update({
+    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+  });
+
+  // 2. S3에 파일 업로드를 위한 파라미터를 설정한다.
+  // S3를 퍼블릭으로 설정해야 읽어올 수 있다.
+  const s3 = new AWS.S3();
+  let params = {
+    Bucket: process.env.S3_BUCKET,
+    Key: photo.name,
+    Body: file,
+    ContentType: path.parse(photo.name).ext.split(".")[1],
+    ACL: "public-read",
+  };
+
+  // S3에 파일을 업로드 하고, 성공하면 디비에 파일명 저장한다.
+  s3.upload(params, async function (err, data) {
+    console.log(err, data);
+    // err이 null이면 업로드에 성공한 것
+
+    let query =
+      "insert into photo_post (user_id, photo_url, content) \
+                values (?,?,?)";
+    let dbData = [user_id, photo.name, content];
+
+    try {
+      [result] = await connection.query(query, dbData);
+      res.status(200).json({ success: true });
+      return;
+    } catch (e) {
+      res.status(500).json({ error: e });
       return;
     }
   });
 
-  let query =
-    "insert into photo_post (user_id, photo_url, content) \
-                values (?,?,?)";
-  let data = [user_id, photo.name, content];
-
-  try {
-    [result] = await connection.query(query, data);
-    res.status(200).json({ success: true });
-    return;
-  } catch (e) {
-    res.status(500).json({ error: e });
-    return;
-  }
+  // 포스트맨으로 실행해본다.
 };
 
 // @desc    내가 쓴 포스트 정보 가져오기 (25개씩)
